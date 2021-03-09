@@ -50,7 +50,9 @@ export default {
   methods: {
     onSubmit() {
       console.log('submited form')
-      this.$store.dispatch('register')
+      this.$store.dispatch('register', {email: 'asdssssssssfdflkf@sdfds.fg', username: 'oijfnksssssssslml', password: '123456789'}).then(user => {
+        console.log('successfully register user', user)
+      })
     }
   }
 }
