@@ -14,6 +14,11 @@
             </router-link>
           </p>
 
+          <mcv-validation-errors
+              v-if="validationErrorsComp"
+              :validationErrors="validationErrorsComp"
+          />
+
           <form class="" @submit.prevent="onSubmit">
             <fieldset >
 
@@ -40,8 +45,12 @@
 </template>
 
 <script>
+import McvValidationErrors from "@/components/ValidationErrors";
+import {actionTypes} from "@/store/modules/auth";
+
 export default {
   name: 'McvRegister',
+  components: {McvValidationErrors},
   data (){
     return {
       email: '',
@@ -52,12 +61,15 @@ export default {
   computed: {
     isSubmitting() {
       return this.$store.state.auth.isSubmitting
+    },
+    validationErrorsComp() {
+      return this.$store.state.auth.validationErrors
     }
   },
   methods: {
     onSubmit() {
       console.log('submited form')
-      this.$store.dispatch('register',
+      this.$store.dispatch(actionTypes.register,
           {
             email: this.email,
             username: this.username,
