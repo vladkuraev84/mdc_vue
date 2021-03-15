@@ -6,8 +6,8 @@
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Sign up</h1>
           <p class="text-xs-center">
-            <router-link :to="{name: 'login'}">
-              Have an account?
+            <router-link :to="{name: 'register'}" class="hide">
+              Need an account?
             </router-link>
           </p>
 
@@ -19,10 +19,6 @@
           <form class="" @submit.prevent="onSubmit">
             <fieldset >
 
-              <fieldset class="form-group" >
-                <input class="form-control form-control-lg" type="text" placeholder="Username" v-model="username">
-              </fieldset>
-
               <fieldset class="form-group">
                 <input class="form-control form-control-lg" type="email" placeholder="Email" v-model="email">
               </fieldset>
@@ -31,7 +27,7 @@
                 <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="password">
               </fieldset>
 
-              <button class="btn btn-lg btn-primary pull-xs-right" type="submit" :disabled="isSubmitting">Sign up</button>
+              <button class="btn btn-lg btn-primary pull-xs-right" type="submit" :disabled="isSubmitting">Sign in</button>
             </fieldset>
           </form>
         </div>
@@ -47,13 +43,12 @@ import McvValidationErrors from "@/components/ValidationErrors";
 import {actionTypes} from "@/store/modules/auth";
 
 export default {
-  name: 'McvRegister',
+  name: 'Mcvlogin',
   components: {McvValidationErrors},
   data (){
     return {
       email: '',
-      password: '',
-      username: ''
+      password: ''
     }
   },
   computed: {
@@ -70,16 +65,14 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$store.dispatch(actionTypes.register,
+      this.$store.dispatch(actionTypes.login,
           {
             email: this.email,
-            username: this.username,
             password: this.password
           })
-          .then(user => {
-            console.log('successfully register user', user)
-            this.$router.push({name: 'home'})
-          })
+      .then(() => {
+        this.$router.push({name: 'home'})
+      })
     }
   }
 }

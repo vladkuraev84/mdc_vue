@@ -11,7 +11,11 @@ const state = {
 export const mutationsType = {
 	registerStart: '[auth] registerStart',
 	registerSuccess: '[auth] registerSuccess',
-	registerFailure: '[auth] registerFailure'
+	registerFailure: '[auth] registerFailure',
+	
+	loginStart: '[auth] loginStart',
+	loginSuccess: '[auth] loginSuccess',
+	loginFailure: '[auth] loginFailure'
 }
 
 const mutations = {
@@ -27,11 +31,25 @@ const mutations = {
 	[mutationsType.registerFailure](state, payload) {
 		state.isSubmitting = false
 		state.validationErrors = payload
+	},
+	[mutationsType.loginStart](state) {
+		state.isSubmiting = true;
+		state.validationErrors = null
+	},
+	[mutationsType.loginSuccess](state, payload){
+		state.isSubmiting = false
+		state.currentUser = payload
+		state.isLoggedIn = true
+	},
+	[mutationsType.loginFailure](state, payload) {
+		state.isSubmiting = false
+		state.validationErrors = payload
 	}
 }
 
 export const actionTypes = {
-	register: '[auth] register'
+	register: '[auth] register',
+	login: '[auth] login'
 }
 
 const actions = {
@@ -51,6 +69,21 @@ const actions = {
 		/*setTimeout(() => {
 			context.commit('registerStart')
 		}, 1000)*/
+	},
+	
+	[actionTypes.login](context, credentials) {
+		return new Promise(resolve => {
+			context.commit(mutationsType.loginStart)
+			authApi.login(credentials)
+				.then(response => {
+					context.commit(mutationsType.loginSuccess, response.data.user)
+					setItem('accessToken', response.data.user.token)
+					resolve(response.data.user)
+				})
+				.catch(result => {
+					context.commit(mutationsType.loginFailure, result.response.data.errors)
+				})
+		})
 	}
 }
 
