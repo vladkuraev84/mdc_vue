@@ -1,10 +1,18 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <mcv-topbar />
     <router-view/>
   </div>
 </template>
+
+<script>
+
+import McvTopbar from '@/components/Topbar';
+
+  export default {
+    name: 'McvApp',
+    components:{McvTopbar},
+
+  }
+</script>
 
