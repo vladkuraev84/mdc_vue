@@ -27,13 +27,21 @@
           TAG LIST
         </router-link>
       </div>
-      Pagination
+      <McvPagination
+          :total="feed.articlesCount"
+          :limit="limit"
+          :current-page="currentPage"
+          :url="baseUrl"
+      />
     </div>
   </div>
 </template>
 <script>
 import {mapState} from 'vuex';
 import {actionTypes} from "@/store/modules/feed";
+import McvPagination from '@/components/Pagination';
+import {limit} from '@/helpers/vars';
+import {stringify, parseUrl} from 'query-string';
 
 export default {
   name: 'McvFeed',
@@ -43,16 +51,51 @@ export default {
       required: true
     }
   },
-  computed: {
+  data() {
+    return {
+      /*total: 500,*/
+      limit,
+      /*currentPage: 5,*/
+      url: '/'
+    }
+  },
+  components: {McvPagination},
+  computed: { // декларативно иммутабельная штука (объект), лучше чаще её использовать -- легче поддерживать и дебажить, потому тут мы описываем что происходит во всем приложении, а не то как это происходит, в отличии от watch
     ...mapState({
       isLoading: state => state.feed.isLoading,
       feed: state => state.feed.data,
       error: state => state.feed.error
-    })
+    }),
+    currentPage() {
+      return Number(this.$route.query.page || '1')
+    },
+    baseUrl() {
+      return this.$route.path
+    },
+    offset() {
+      return this.currentPage * limit - limit
+    }
+  },
+  watch: {
+    currentPage() { // в watch - currentPage это локальная переменная, это наш колбэк, когданаша переменная поменяется. Здесь всегда императивный код
+      this.fetchFeed()
+    }
   },
   mounted() {
-    console.log('init feed')
-    this.$store.dispatch(actionTypes.getFeed, {apiUrl: this.apiUrlFeed})
+    this.fetchFeed()
+  },
+  methods: {
+    fetchFeed() {
+      const parsedUrl = parseUrl(this.apiUrlFeed);
+      const stringifiedParams = stringify({
+        limit,
+        offset: this.offset,
+        ...parsedUrl.query
+      });
+      const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
+      // console.log(apiUrlWithParams)
+      this.$store.dispatch(actionTypes.getFeed, {apiUrl: apiUrlWithParams})
+    }
   }
 }
 </script>
