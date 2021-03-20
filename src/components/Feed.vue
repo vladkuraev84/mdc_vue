@@ -67,21 +67,26 @@ export default {
       error: state => state.feed.error
     }),
     currentPage() {
+      console.log('current page')
       return Number(this.$route.query.page || '1')
     },
     baseUrl() {
+      console.log('rout path')
       return this.$route.path
     },
     offset() {
+      console.log('offset')
       return this.currentPage * limit - limit
     }
   },
   watch: {
-    currentPage() { // в watch - currentPage это локальная переменная, это наш колбэк, когданаша переменная поменяется. Здесь всегда императивный код
+    currentPage() { // в watch - currentPage это локальная переменная, это наш колбэк, когда наша переменная поменяется. Здесь всегда императивный код
+      console.log('watch methods')
       this.fetchFeed()
     }
   },
   mounted() {
+    console.log('mounted')
     this.fetchFeed()
   },
   methods: {
